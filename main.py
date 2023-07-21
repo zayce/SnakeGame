@@ -1,6 +1,5 @@
 import random
 from tkinter import *
-from tkinter import messagebox
 import  time
 
 size_wight = 500
@@ -18,10 +17,10 @@ snake_y = virtual_game_y//2
 snake_x_nav = 0
 snake_y_nav = 0
 
-size_wight = []
+
+Game_Running = True
 check_can_we_delete_snake_item = []
-snake_list = []
-presents_list = []
+present_list = []
 bind_all = []
 
 snake_size = 5
@@ -31,13 +30,13 @@ tk = Tk()
 tk.title("Игра Змейка на Пайтон")
 tk.resizable(0, 0)
 tk.wm_attributes("-topmost", 1)
-canvas = Canvas(tk, widht=size_wight, height=game_height, bd=0, highlightthickness=0)
+canvas = Canvas(tk, height=game_height, bd=0, highlightthickness=0)
 canvas.pack()
 tk.update()
 
 present_color1 = "blue"
 present_color2 = "black"
-present_list = []
+presents_list = []
 present_size = 25
 for i in range(present_size):
     x = random.randrange(virtual_game_x)
@@ -50,20 +49,21 @@ for i in range(present_size):
 print(present_list)
 
 def snake_paint_item(canvas, x, y):
-    global snake_list
+    global snake_size
     id1 = canvas.create_rectangle(x * snake_item, y * snake_item, x * snake_item + snake_item,
                                   y * snake_item + snake_item, fill=snake_color2)
     id2 = canvas.create_rectangle(x * snake_item + 2, y * snake_item + 2, x * snake_item + snake_item - 2,
                                   y * snake_item + snake_item - 2, fill=snake_color1)
 
-    snake_list.append([x, y, id1, id2])
-    # print(snake_list)
+    snake_size.append([x, y, id1, id2])
+    print(snake_size)
 
-snake_paint_item(canvas, snake_x, snake_y)
+
+
 
 def check_we_delete_snake_item():
-    if len(snake_list) >= snake_size:
-        temp_item = snake_list.pop(0)
+    if len(snake_size) >= snake_size:
+        temp_item = snake_size.pop(0)
         # print(temp_item)
         canvas.delete(temp_item[2])
         canvas.delete(temp_item[3])
@@ -85,7 +85,6 @@ def snake_move(event):
     global  snake_y
     global  snake_x_nav
     global  snake_y_nav
-    global  snake_move
 
     if event.keysym == "Up":
         snake_x_nav = 0
@@ -109,10 +108,10 @@ def snake_move(event):
     check_if_we_found_present()
 
 
-canvas.bind_all('<KeyPress-Left>,')
-canvas.bind_all('<KeyPress-Right>,')
-canvas.bind_all('<KeyPress-Up>,')
-canvas.bind_all('<KeyPress-Down>,')
+#canvas.bind_all("<KeyPress-Left>," snake_move)
+#canvas.bind_all("<KeyPress-Right>," snake_move)
+#canvas.bind_all("<KeyPress-Up>," snake_move)
+#canvas.bind_all("<KeyPress-Down>," snake_move)
 
 
 def game_over():
@@ -120,24 +119,23 @@ def game_over():
     Game_Running = False
 
 def check_if_borders():
-    if snake_x>virtual_game_x or snake_x<0 or snake_y>virtual_game_y or snake_y<0:
+    if snake_x > virtual_game_x or snake_x<0 or snake_y>virtual_game_y or snake_y<0:
         game_over()
 
 def check_we_touch_self(f_x, f_y):
     global Game_Running
     if not (snake_x_nav == 0 and snake_y_nav == 0):
-        for i in range(len(snake_list)):
-            if snake_list[i][0] == f_x and snake_list[i][1] == f_y:
+        for i in range(len(snake_size)):
+            if snake_size[i][0] == f_x and snake_size[i][1] == f_y:
                 print("found!!!")
                 Game_Running = False
+
 while Game_Running:
-    check_can_we_delete_snake_item()
     check_if_we_found_present()
     check_if_borders()
     check_we_touch_self(snake_x + snake_x_nav, snake_y + snake_y_nav)
     snake_x = snake_x + snake_x_nav
     snake_y = snake_y + snake_y_nav
-    snake_paint_item(canvas, snake_x, snake_y)
     tk.update_idletasks()
     tk.update()
     time.sleep(0.15)
